@@ -1,0 +1,187 @@
+{% extends "template.html" %}
+{% block content %}
+    <div class="min-vh-100 mx-2 mx-md-5">
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-dismissible fade show alert-{{ category }}" role="alert" data-mdb-color="warning">
+                            <span>{{ message }}</span>
+                            <button type="button" class="btn-close" data-mdb-dismiss="alert" aria-label="Close" style="filter: invert(0)"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <div class="row">
+            <div class="col col-12 col-xxl-9 mb-4">
+                <h1>Members</h1>
+                <div class="overflow-x-scroll">
+                    <table class="table mb-0" >
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Member</th>
+                                <th>Surname</th>
+                                <th>Joined</th>
+                                <th>Membership</th>
+                                <th>Nights</th>
+                                <th>Points</th>
+                                <th style="min-width: 325px">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for member in members %}
+                                <tr>
+                                    <td><p class="fw-bold my-1">{{ member.id }}</p></td>
+                                    <td><p class="fw-normal my-1">{{ member.memberId }}</p></td>
+                                    <td><p class="fw-normal my-1">{{ member.surname }}</p></td>
+                                    <td><p class="fw-normal my-1">{{ member.joined }}</p></td>
+                                    <td>
+                                        {% if member.membership == "Platinum" %}
+                                            <span class="badge badge-platinum rounded-pill d-inline">Platinum</span>
+                                        {% elif member.membership == "Gold" %}
+                                            <span class="badge badge-gold rounded-pill d-inline">Gold</span>
+                                        {% else %}
+                                            <span class="badge badge-silver rounded-pill d-inline">Silver</span>
+                                        {% endif %}
+
+                                    </td>
+                                    <td><p class="fw-normal mb-1">{{ member.nights }}</p></td>
+                                    <td><p class="fw-normal mb-1">{{ member.points }}</p></td>
+                                    <td>
+                                        <a role="button" class="btn btn-outline-success btn-sm btn-rounded" href="/new-booking/{{ member.id }}">
+                                            <i class="fas fa-calendar-plus me-2"></i>Booking
+                                        </a>
+                                        <button type="button" class="btn btn-outline-warning btn-sm btn-rounded"
+                                        onclick="editMember({
+                                                    id: '{{ member.id }}',
+                                                    memberId: '{{ member.memberId }}',
+                                                    surname: '{{ member.surname }}',
+                                                    joined: '{{ member.joined }}',
+                                                    membership: '{{ member.membership }}',
+                                                    nights: '{{ member.nights }}',
+                                                    points: '{{ member.points }}'
+                                                })"><i class="fas fa-pen me-2"></i>Edit</button>
+                                        <div class="btn-group shadow-0">
+                                            <button type="button" class="btn btn-outline-danger btn-sm btn-rounded dropdown-toggle"
+                                                  data-mdb-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-trash me-2"></i>Delete
+                                            </button>
+                                            <ul class="dropdown-menu pb-2 px-2" style="min-width: 0">
+                                                <li>
+                                                    <span class="dropdown-item" style="background-color: #424242">
+                                                        Are you sure?
+                                                    </span>
+                                                </li>
+                                                <li>
+                                                    <a class=" btn btn-outline-danger btn-sm btn-rounded"
+                                                       href="/delete-member/{{ member.id }}">Delete</a>
+                                                    <a type="button" class="btn btn-outline-light btn-sm btn-floating position-relative">
+                                                        <i class="fas fa-times position-absolute" style="top: 0; left: 0; right: 0; bottom: 0;"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col col-12 col-xxl-3">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="card-title pb-2">Options</h2>
+                        <a class="btn btn-outline-light btn-rounded" href="/add-member">
+                            <i class="fas fa-user-plus me-2"></i>Add Member
+                        </a>
+                    </div>
+                </div>
+                <div class="card mb-4">
+                    <div class="card-body position-relative">
+                        <div id="editmember-cover" class="position-absolute edit-cover">
+                            <h3 class="text-center">Select a member<br>to start editing</h3>
+                        </div>
+                        <h2 class="card-title pb-2">Edit Member</h2>
+                        <form method="post" action="/edit-member">
+                            <div class="row mb-4">
+                                <div class="col col-4">
+                                    <div class="form-outline mb-4">
+                                        <input type="number" id="editmember-id" name="id" class="form-control active" readonly/>
+                                        <label class="form-label" for="editmember-id">ID</label>
+                                    </div>
+                                </div>
+                                <div class="col col-8">
+                                    <div class="form-outline mb-4">
+                                        <input type="text" id="editmember-surname" name="surname" class="form-control active"/>
+                                        <label class="form-label" for="editmember-surname">Surname</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-6">
+                                    <div class="col">
+                                            <div class="form-outline mb-4">
+                                                <input type="number" id="editmember-joined" name="joined" class="form-control active"/>
+                                                <label class="form-label" for="editmember-joined">Year Joined</label>
+                                            </div>
+                                    </div>
+                                    <div class="col">
+                                            <div class="form-outline mb-4">
+                                                <input type="number" id="editmember-nights" name="nights" class="form-control active"/>
+                                                <label class="form-label" for="editmember-nights">Nights Booked</label>
+                                            </div>
+                                    </div>
+                                    <div class="col">
+                                            <div class="form-outline mb-4">
+                                                <input type="number" id="editmember-points" name="points" class="form-control active"/>
+                                                <label class="form-label" for="editmember-points">Points</label>
+                                            </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="col">
+                                        <div class="form-outline mb-4">
+                                            <input type="text" id="editmember-memberId" name="memberId" class="form-control active"/>
+                                            <label class="form-label" for="editmember-memberId">Member ID</label>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <h5>Membership</h5>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="membership" value="Silver" id="editmember-membership1"/>
+                                            <label class="form-check-label" for="editmember-membership1">Silver</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="membership" value="Gold" id="editmember-membership2"/>
+                                            <label class="form-check-label" for="editmember-membership2">Gold</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="membership" value="Platinum" id="editmember-membership3"/>
+                                            <label class="form-check-label" for="editmember-membership3">Platinum</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!-- Submit button -->
+                            <button type="submit" class="btn btn-outline-warning btn-rounded me-2">
+                                <i class="fas fa-pen me-2"></i>Edit
+                            </button>
+                            <button type="button" class="btn btn-outline-danger btn-rounded" onclick=resetEditMember()>
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

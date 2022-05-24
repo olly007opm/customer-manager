@@ -1,0 +1,179 @@
+{% extends "template.html" %}
+{% block content %}
+    <div class="min-vh-100 mx-2 mx-md-5">
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-dismissible fade show alert-{{ category }}" role="alert" data-mdb-color="warning">
+                            <span>{{ message }}</span>
+                            <button type="button" class="btn-close" data-mdb-dismiss="alert" aria-label="Close" style="filter: invert(0)"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <div class="row">
+            <div class="col col-12 col-xxl-8 mb-4">
+                <h1>Users</h1>
+                <div class="overflow-x-scroll">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Email</th>
+                                <th>Name</th>
+                                <th>Admin</th>
+                                <th style="min-width: 240px">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for user in users %}
+                            <tr>
+                                <td><p class="fw-bold mb-1">{{ user.id }}</p></td>
+                                <td><p class="fw-normal mb-1">{{ user.email }}</p></td>
+                                <td><p class="fw-normal mb-1">{{ user.name }}</p></td>
+                                <td>
+                                {% if user.admin %}
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked disabled/>
+                                {% else %}
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" disabled/>
+                                {% endif %}
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-outline-warning btn-sm btn-rounded" onclick="editUser({
+                                                    id: {{ user.id }},
+                                                    name: '{{ user.name }}',
+                                                    email: '{{ user.email }}',
+                                                    admin: '{{ user.admin }}'
+                                                })"><i class="fas fa-pen me-2"></i>Edit</button>
+                                    {% if not user.admin %}
+                                        <div class="btn-group shadow-0">
+                                            <button type="button" class="btn btn-outline-danger btn-sm btn-rounded dropdown-toggle"
+                                                  data-mdb-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-trash me-2"></i>Delete
+                                            </button>
+                                            <ul class="dropdown-menu pb-2 px-2" style="min-width: 0">
+                                                <li>
+                                                    <span class="dropdown-item" style="background-color: #424242">
+                                                        Are you sure?
+                                                    </span>
+                                                </li>
+                                                <li>
+                                                    <a class=" btn btn-outline-danger btn-sm btn-rounded"
+                                                       href="/admin/delete-user/{{ user.id }}">Delete</a>
+                                                    <a type="button" class="btn btn-outline-light btn-sm btn-floating position-relative">
+                                                        <i class="fas fa-times position-absolute" style="top: 0; left: 0; right: 0; bottom: 0;"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col col-12 col-xxl-4 mb-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="card-title pb-2">Add User</h2>
+                        <form method="post" action="/admin/add-user">
+                            <div class="row mb-4">
+                                <div class="col col-12 col-xl-6">
+                                    <div class="form-outline mb-4">
+                                        <input type="email" id="adduser-email" name="email" class="form-control" />
+                                        <label class="form-label" for="adduser-email">Email</label>
+                                    </div>
+                                </div>
+                                <div class="col col-12 col-xl-6">
+                                    <div class="form-outline mb-4">
+                                        <input type="text" id="adduser-name" name="name" class="form-control"/>
+                                        <label class="form-label" for="adduser-name">Name</label>
+                                    </div>
+                                </div>
+                                <div class="col col-12 col-xl-6">
+                                    <div class="form-outline mb-4">
+                                        <input type="password" id="adduser-password" name="password" class="form-control"/>
+                                        <label class="form-label" for="adduser-password">Password</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <button type="submit" class="btn btn-outline-success btn-rounded">
+                                        <i class="fas fa-user-plus me-2"></i>Add User
+                                    </button>
+                                </div>
+                                <div class="col">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="adduser-admin" name="isAdmin"/>
+                                        <label class="form-check-label" for="adduser-admin">Admin</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div id="edituser-cover" class="position-absolute edit-cover">
+                            <h3 class="text-center">Select a user<br>to start editing</h3>
+                        </div>
+                        <h2 class="card-title pb-2">Edit User</h2>
+                        <form method="post" action="/admin/edit-user">
+                            <div class="row mb-4">
+                                <div class="col col-3 col-md-2 col-xl-3">
+                                    <div class="form-outline mb-4">
+                                        <input type="number" id="edituser-id" name="id" class="form-control active" readonly/>
+                                        <label class="form-label" for="edituser-id">ID</label>
+                                    </div>
+                                </div>
+                                <div class="col col-9 col-md-5 col-xl-9">
+                                    <div class="form-outline mb-4">
+                                        <input type="email" id="edituser-email" name="email" class="form-control active"/>
+                                        <label class="form-label" for="edituser-email">Email</label>
+                                    </div>
+                                </div>
+                                <div class="col col-6 col-md-5 col-xl-6">
+                                    <div class="form-outline mb-4">
+                                        <input type="text" id="edituser-name" name="name" class="form-control active"/>
+                                        <label class="form-label" for="edituser-name">Name</label>
+                                    </div>
+                                </div>
+                                <div class="col col-6 col-md-6 col-xl-6 mb-4 mb-md-0">
+                                    <div class="form-outline">
+                                        <input type="password" id="edituser-password" name="password" class="form-control"/>
+                                        <label class="form-label" for="edituser-password">Password</label>
+                                    </div>
+                                </div>
+                                <div class="col col-12 col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="edituser-admin" name="admin"/>
+                                        <label class="form-check-label" for="edituser-admin">Admin</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <button type="submit" class="btn btn-outline-warning btn-rounded me-4">
+                                        <i class="fas fa-pen me-2"></i>Edit
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger btn-rounded" onclick=resetEditUser()>
+                                        <i class="fas fa-times me-2"></i>Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

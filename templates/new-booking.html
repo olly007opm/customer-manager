@@ -1,0 +1,151 @@
+{% extends "template.html" %}
+{% block content %}
+    <div class="min-vh-100 mx-2 mx-md-5">
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-dismissible fade show alert-{{ category }}" role="alert" data-mdb-color="warning">
+                            <span>{{ message }}</span>
+                            <button type="button" class="btn-close" data-mdb-dismiss="alert" aria-label="Close" style="filter: invert(0)"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+        <div class="row">
+            <div class="col-xxl-5 col-xl-6 col-md-12 mb-4">
+                <div class="card">
+                    <div class="card-body position-relative">
+                        <h2 class="card-title pb-2">New Booking</h2>
+                        <form method="post">
+                            <div class="row">
+                                <div class="col col-3 col-md-2">
+                                    <div class="form-outline mb-4">
+                                        <input type="number" id="newbooking-id" name="id" class="form-control" value="{{ member.id }}" readonly/>
+                                        <label class="form-label" for="newbooking-id">ID</label>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-outline mb-4">
+                                        <input type="text" id="newbooking-surname" name="surname" class="form-control" value="{{ member.surname }}" readonly/>
+                                        <label class="form-label" for="newbooking-surname">Surname</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-outline mb-4">
+                                    <input type="text" name="memberId" id="newbooking-date" class="form-control active"/>
+                                    <label class="form-label" for="newbooking-date">Date</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-outline mb-4">
+                                        <input type="number" id="newbooking-nights" name="nights" class="form-control active" readonly value="0"/>
+                                        <label class="form-label" for="newbooking-nights">Nights</label>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-outline mb-4">
+                                    {% if member.membership == "Platinum" %}
+                                        <input type="number" id="newbooking-multiplier" name="multiplier" class="form-control" value="4000" readonly/>
+                                    {% elif member.membership == "Gold" %}
+                                        <input type="number" id="newbooking-multiplier" name="multiplier" class="form-control" value="3000" readonly/>
+                                    {% else %}
+                                        <input type="number" id="newbooking-multiplier" name="multiplier" class="form-control" value="2500" readonly/>
+                                    {% endif %}
+                                        <label class="form-label" for="newbooking-multiplier">Multiplier</label>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-outline mb-4">
+                                        <input type="number" id="newbooking-points" name="points" class="form-control active" readonly value="0"/>
+                                        <label class="form-label" for="newbooking-points">Points</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-outline mb-4">
+                                        <input type="number" id="newbooking-newnights" name="newnights" class="form-control active" readonly value="{{ member.nights }}"/>
+                                        <label class="form-label" for="newbooking-newnights">New Total Nights</label>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-outline mb-4">
+                                        <input type="number" id="newbooking-newpoints" name="newpoints" class="form-control active" readonly value="{{ member.points }}"/>
+                                        <label class="form-label" for="newbooking-newpoints">New Total Points</label>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="mb-4" style="margin-top: -0.75rem;">
+                                        <span class="small opacity-80">New Membership</span>
+                                        <div id="newbooking-newmembership">
+                                            {% if member.membership == "Platinum" %}
+                                                <span class="badge badge-platinum rounded-pill d-inline">Platinum</span>
+                                            {% elif member.membership == "Gold" %}
+                                                <span class="badge badge-gold rounded-pill d-inline">Gold</span>
+                                            {% else %}
+                                                <span class="badge badge-silver rounded-pill d-inline">Silver</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="startdate" id="newbooking-startdate">
+                            <input type="hidden" name="enddate" id="newbooking-enddate">
+                            <button type="submit" class="btn btn-outline-light btn-rounded">
+                                <i class="fas fa-calendar-plus me-2"></i>Confirm Booking
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xxl-3 col-xl-6 col-md-12 mb-4">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>{{ member.id }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Member ID</td>
+                            <td><p class="fw-normal my-1">{{ member.memberId }}</p></td>
+                        </tr>
+                        <tr>
+                            <td>Surname</td>
+                            <td><p class="fw-normal my-1">{{ member.surname }}</p></td>
+                        </tr>
+                        <tr>
+                            <td>Year Joined</td>
+                            <td><p class="fw-normal my-1">{{ member.joined }}</p></td>
+                        </tr>
+                        <tr>
+                            <td>Membership</td>
+                            <td>
+                                {% if member.membership == "Platinum" %}
+                                    <span class="badge badge-platinum rounded-pill d-inline">Platinum</span>
+                                {% elif member.membership == "Gold" %}
+                                    <span class="badge badge-gold rounded-pill d-inline">Gold</span>
+                                {% else %}
+                                    <span class="badge badge-silver rounded-pill d-inline">Silver</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Nights Booked</td>
+                            <td><p class="fw-normal my-1">{{ member.nights }}</p></td>
+                        </tr>
+                        <tr>
+                            <td>Points</td>
+                            <td><p class="fw-normal my-1">{{ member.points }}</p></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

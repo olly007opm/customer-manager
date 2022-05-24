@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>Crawdale Hotel</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" />
+    <!-- Google Fonts Roboto -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
+    <!-- Date Picker -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
+    <!-- MDB -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mdb.dark.min.css') }}" />
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-md navbar-dark mb-4" style="z-index: 2000; background-color: #424242">
+        <div class="container-fluid">
+        <!-- Navbar brand -->
+            <a class="navbar-brand nav-link" href="/">
+                <strong>Crawdale Hotel</strong>
+            </a>
+            {% if current_user.is_authenticated %}
+                <button
+                  class="navbar-toggler"
+                  type="button"
+                  data-mdb-toggle="collapse"
+                  data-mdb-target="#navbarSupportedContent"
+                  aria-controls="navbarSupportedContent"
+                  aria-expanded="false"
+                  aria-label="Toggle navigation"
+                >
+                  <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+                    <ul class="navbar-nav d-flex">
+                        <!-- Icons -->
+                            <li class="nav-item mx-2">
+                                <a class="nav-link" href="/">
+                                    <i class="fas fa-home"></i>
+                                    <span>Home</span>
+                                </a>
+                            </li>
+                            <li class="nav-item mx-2">
+                                <a class="nav-link" href="/add-member">
+                                    <i class="fas fa-user-plus"></i>
+                                    <span>Add Member</span>
+                                </a>
+                            </li>
+                        {% if current_user.admin %}
+                            <li class="nav-item mx-2">
+                                <a class="nav-link" href="/admin">
+                                    <i class="fas fa-user-shield"></i>
+                                    <span>Admin Panel</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                            <li class="nav-item mx-2">
+                                <a class="nav-link" href="/logout">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span>Log out</span>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    {% block content %}
+    {% endblock %}
+
+
+    <!--Footer-->
+    <footer class="bg-light text-lg-start">
+        <!-- Copyright -->
+        <div class="text-center p-3 text-white" style="background-color: black">
+          <a class="text-white" href="https://olly.ml/">© Olly 2022</a>
+        </div>
+    </footer>
+    <!-- MDB -->
+    <script type="text/javascript" src="{{ url_for('static', filename='js/mdb.min.js') }}"></script>
+    <!-- Date Picker -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <!-- Custom scripts -->
+    <script type="text/javascript" src="{{ url_for('static', filename='js/addMember.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/editMember.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/editUser.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/newBooking.js') }}"></script>
+</body>
+</html>
